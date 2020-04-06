@@ -13,8 +13,8 @@ class TopicModeler:
         self._descriptor = descriptor
 
     def topic_models(self, documents: List[str]) -> List[Dict[str, Any]]:
-        clusters = self._clusterer(documents)
-        topic_descriptions = self._descriptor(clusters)
+        clusters = self._clusterer.cluster(documents)
+        topic_descriptions = self._descriptor.generate_descriptions(clusters)
 
         topics = []
 
