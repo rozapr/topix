@@ -1,7 +1,7 @@
 from .interfaces import TopicClusterer
 from typing import List, Dict
 from transformers import BertModel, BertTokenizer
-from sklearn.cluster import KMeans
+from .k_means import k_means
 from datetime import datetime
 import pandas as pd
 import numpy as np
@@ -48,15 +48,9 @@ class BertClusterer(TopicClusterer):
         mean_of_words = torch.mean(last_hidden_states, axis=1).squeeze(0).tolist()
         return mean_of_words
 
-    def k_means(self, vectors, num_clusters=5):
-        clustering_model = KMeans(n_clusters=num_clusters)
-        clustering_model.fit(vectors)
-        cluster_assignment = clustering_model.labels_
-        return cluster_assignment
-
     def cluster(self, documents: List[str]) -> List[List[str]]:
         document_embeddings = self.get_document_embeddings(documents)
-        cluster_assignment = self.k_means(document_embeddings)
+        cluster_assignment = k_means(document_embeddings)
         df = pd.DataFrame({'vectors': document_embeddings, 'cluster': cluster_assignment, 'text': documents})
         cluster_to_docs = df.groupby('cluster')['text'].apply(list).reset_index(name='docs')
         return cluster_to_docs['docs'].tolist()
