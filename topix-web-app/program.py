@@ -4,7 +4,8 @@ from core import TopicModeler
 
 app = Flask(__name__)
 
-topic_modeler = TopicModeler(clusterer=BertClusterer, descriptor=None) # JUST AS MOCK! WILL GIVE ERROR BECAUSE OF NONES!
+# JUST AS MOCK! WILL GIVE ERROR BECAUSE OF NONES!
+topic_modeler = TopicModeler(clusterer=BertClusterer(), descriptor=None)
 
 
 @app.route('/topic_model', methods=['POST'])

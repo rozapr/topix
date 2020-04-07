@@ -3,6 +3,7 @@ from typing import List, Dict
 from transformers import BertModel, BertTokenizer
 from sklearn.cluster import KMeans
 import pandas as pd
+import numpy as np
 import torch
 
 PATH_TO_MODEL = '/datadrive/topix/exploration/bert/checkpoint-2216000/'
@@ -33,12 +34,12 @@ class BertClusterer(TopicClusterer):
         document_embeddings = []
         for document in documents:
             sentences = document.split('\n')
-            sentence_embeddings = [get_sentence_embeddings(sentence) for sentence in sentences]
+            sentence_embeddings = [self.get_sentence_embeddings(sentence) for sentence in sentences]
             sentence_embeddings = np.array([sentence for sentence in sentence_embeddings if sentence is not None])
             mean_document_embedding = np.mean(sentence_embeddings, axis=1)
             document_embeddings.append(mean_document_embedding)
 
-        cluster_assignment = k_means(document_embeddings)
+        cluster_assignment = self.k_means(document_embeddings)
         df = pd.DataFrame({'vectors': document_embeddings, 'cluster': cluster_assignment, 'text': documents})
         cluster_to_docs = df.groupby('cluster')['text'].apply(list).reset_index(name='docs')
 
