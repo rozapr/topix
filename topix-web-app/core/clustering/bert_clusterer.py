@@ -22,7 +22,8 @@ class BertClusterer(TopicClusterer):
 
     def get_document_embeddings(self, documents: List[str]) -> List[np.ndarray]:
         document_embeddings = []
-        print(f'{datetime.now()} num of docs: {len(documents)}')
+        len_docs = len(documents)
+        print(f'{datetime.now()} num of docs: {len_docs}')
         for index, document in enumerate(documents):
             sentences = document.split('\n')
             sentence_embeddings = [self.get_sentence_embeddings(sentence) for sentence in sentences]
@@ -30,7 +31,8 @@ class BertClusterer(TopicClusterer):
             mean_document_embedding = np.mean(sentence_embeddings, axis=0)
             document_embeddings.append(mean_document_embedding)
             if index % 100 == 0:
-                print(f'{datetime.now()} finished {index}%')
+                present = round(100 * index / len_docs)
+                print(f'{datetime.now()} finished {present}%')
         print(f'{datetime.now()} finished embedding docs')
         return document_embeddings
 
