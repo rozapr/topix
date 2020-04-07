@@ -1,31 +1,45 @@
 from .interfaces import TopicDescriptor
-from typing import List, Dict
+from typing import List, Callable
 from sklearn.feature_extraction.text import TfidfVectorizer
 from gensim.models.phrases import Phrases, Phraser
 import itertools
 
 
 class TFIDFTopicDescriptor(TopicDescriptor):
-    def __init__(self, tokenize, min_df, max_df_ratio, topn_words_per_topic, phrases_min_count, phrases_threshold):
-        self.tokenize = tokenize
-        self.min_df = min_df
-        self.max_df_ratio = max_df_ratio
-        self.topn_words_per_topic = topn_words_per_topic
-        self.phrases_min_count = phrases_min_count
-        self.phrases_threshold = phrases_threshold
+
+    _tokenize: Callable[[str], List[str]]
+    _min_df: int
+    _max_df_ratio: float
+    _topn_words_per_topic: int
+    _phrases_min_count: int
+    _phrases_threshold: float
+
+    def __init__(   self,
+                    tokenize: Callable[[str], List[str]],
+                    min_df: int,
+                    max_df_ratio: float,
+                    topn_words_per_topic: int,
+                    phrases_min_count: int,
+                    phrases_threshold: float):
+        self._tokenize = tokenize
+        self._min_df = min_df
+        self._max_df_ratio = max_df_ratio
+        self._topn_words_per_topic = topn_words_per_topic
+        self._phrases_min_count = phrases_min_count
+        self._phrases_threshold = phrases_threshold
 
     def generate_descriptions(self, topics: List[List[str]]) -> List[str]:
         preprocessed_topics = preprocess_topics(
                     topics,
-                    self.tokenize,
-                    self.phrases_min_count,
-                    self.phrases_threshold)
+                    self._tokenize,
+                    self._phrases_min_count,
+                    self._phrases_threshold)
 
         all_docs = list(itertools.chain.from_iterable(preprocessed_topics))
 
         corpus_vectorizer, id2token = learn_corpus(
-                                        self.min_df,
-                                        self.max_df_ratio,
+                                        self._min_df,
+                                        self._max_df_ratio,
                                         all_docs)
 
         topics_description = []
@@ -34,14 +48,17 @@ class TFIDFTopicDescriptor(TopicDescriptor):
                                     corpus_vectorizer, 
                                     id2token,
                                     topic,
-                                    self.topn_words_per_topic)
+                                    self._topn_words_per_topic)
 
             topics_description.append(top_words_per_topic)
 
         return topics_description
 
 
-def get_top_words(corpus_vectorizer, id2token, topic, topn_words_per_topic):
+def get_top_words(  corpus_vectorizer: TfidfVectorizer,
+                    id2token: List[str],
+                    topic: List[List[str]],
+                    topn_words_per_topic: int) -> List[List[str]]:
     # create a single document of topic's docs - tf for whole topic
     combined_doc = ' '.join(itertools.chain.from_iterable(topic))
 
@@ -60,14 +77,17 @@ def get_top_words(corpus_vectorizer, id2token, topic, topn_words_per_topic):
     return topn_words
 
 
-def preprocess_topics(topics, tokenize, min_count, threshold):
+def preprocess_topics(  topics: List[List[str]],
+                        tokenize: Callable[[str], List[str]],
+                        phrases_min_count: int,
+                        phrases_threshold: float) -> List[List[List[str]]]:
     tokenized_topics = []
     for topic in topics:
         tokenized_topics.append([tokenize(doc) for doc in topic])
 
     all_docs = itertools.chain.from_iterable(tokenized_topics)
 
-    phrases = Phrases(all_docs, min_count=min_count, threshold=threshold)
+    phrases = Phrases(all_docs, min_count=phrases_min_count, threshold=phrases_threshold)
     bigram_phraser = Phraser(phrases)
 
     preprocessed_topics = []
@@ -78,7 +98,9 @@ def preprocess_topics(topics, tokenize, min_count, threshold):
     return preprocessed_topics
 
 
-def learn_corpus(min_df, max_df_ratio, docs):
+def learn_corpus(   min_df: int,
+                    max_df_ratio: float,
+                    docs: List[List[str]]) -> [TfidfVectorizer, List[str]]:
     # adjust cut-offs for too small topic
     min_df = min(len(docs), min_df)
     max_df = max_df_ratio if len(docs) * max_df_ratio >= min_df else 1.0
