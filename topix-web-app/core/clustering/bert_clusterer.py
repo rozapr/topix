@@ -5,7 +5,7 @@ from sklearn.cluster import KMeans
 import pandas as pd
 import torch
 
-PATH_TO_MODEL = '/datadrive/topix/exploration/bert/'
+PATH_TO_MODEL = '/datadrive/topix/exploration/bert/checkpoint-2216000/'
 MAX_TOKENS_SIZE = 510
 
 
