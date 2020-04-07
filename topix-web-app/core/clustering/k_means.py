@@ -4,15 +4,17 @@ import matplotlib.pyplot as plt
 from kneed import KneeLocator
 import plotly.express as px
 import plotly.offline as of
+from typing import List
 import pandas as pd
+import numpy as np
 import os
 
-BASE_OUTPUT_FOLDER = f'{os.path.dirname(os.path.abspath(__file__))}/outputs/'
+BASE_OUTPUT_FOLDER = f'{os.path.dirname(os.path.abspath("program.py"))}/outputs'
 DISTORTIONS_FILE_PATH = f'{BASE_OUTPUT_FOLDER}/distortions_graph.png'
 CLUSTERS_FILE_PATH = f'{BASE_OUTPUT_FOLDER}/clusters.html'
 
 
-def k_means(vectors, num_clusters=None):
+def k_means(vectors: List[np.ndarray], num_clusters: int = None) -> List[int]:
     if not num_clusters:
         num_clusters = get_clusters_num(vectors)
     print(f'clustering docs to {num_clusters} clusters.')
@@ -23,7 +25,7 @@ def k_means(vectors, num_clusters=None):
     return cluster_assignment
 
 
-def get_clusters_num(vectors):
+def get_clusters_num(vectors: List[np.ndarray]) -> int:
     distortions = []
     cluster_num_series = range(1, 10)
     for clusters_num in cluster_num_series:
@@ -40,14 +42,14 @@ def get_clusters_num(vectors):
     return kn.knee
 
 
-def save_distortions_graph(clusters_num_series, distortions):
+def save_distortions_graph(clusters_num_series: List[int], distortions: List[float]):
     plt.plot(clusters_num_series, distortions, marker='o')
     plt.xlabel('Number of clusters')
     plt.ylabel('Distortion')
     plt.savefig(DISTORTIONS_FILE_PATH)
 
 
-def save_3d_embedding_figure(vectors, clusters):
+def save_3d_embedding_figure(vectors: List[np.ndarray], clusters: List[int]):
     pca = decomposition.PCA(n_components=3)
     pca.fit(vectors)
     embeddings_3d = pca.transform(vectors)
@@ -55,4 +57,5 @@ def save_3d_embedding_figure(vectors, clusters):
     df['cluster'] = clusters
     fig = px.scatter_3d(df, x='x', y='y', z='z', color='cluster')
     of.plot(fig, filename=CLUSTERS_FILE_PATH, auto_open=False)
+
 

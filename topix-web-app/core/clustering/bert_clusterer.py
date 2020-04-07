@@ -1,5 +1,5 @@
 from .interfaces import TopicClusterer
-from typing import List, Dict
+from typing import List
 from transformers import BertModel, BertTokenizer
 from .k_means import k_means
 from datetime import datetime
@@ -20,7 +20,7 @@ class BertClusterer(TopicClusterer):
     def __init__(self):
         self._embedding_model = self._embedding_model.to(self._device)
 
-    def get_document_embeddings(self, documents):
+    def get_document_embeddings(self, documents: List[str]) -> List[np.ndarray]:
         document_embeddings = []
         print(f'{datetime.now()} num of docs: {len(documents)}')
         for index, document in enumerate(documents):
@@ -34,9 +34,9 @@ class BertClusterer(TopicClusterer):
         print(f'{datetime.now()} finished embedding docs')
         return document_embeddings
 
-    def get_sentence_embeddings(self, sentence):
+    def get_sentence_embeddings(self, sentence: str) -> List[float]:
         if sentence.strip() == '' or len(sentence.split()) < MIN_WORDS_IN_SENTENCE:
-            return None
+            return
         sentence = f'[CLS] {sentence} [SEP]'
         tokens = self._tokenizer.encode(sentence)
         if len(tokens) > MAX_TOKENS_SIZE:
