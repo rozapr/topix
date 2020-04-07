@@ -14,6 +14,10 @@ MAX_TOKENS_SIZE = 512
 class BertClusterer(TopicClusterer):
     _tokenizer = BertTokenizer.from_pretrained(PATH_TO_MODEL)
     _embedding_model = BertModel.from_pretrained(PATH_TO_MODEL)
+    _device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    def __init__(self):
+        self._embedding_model.to(self._device)
 
     def get_sentence_embeddings(self, sentence):
         if sentence.strip() == '':
@@ -23,6 +27,7 @@ class BertClusterer(TopicClusterer):
         if len(tokens) > MAX_TOKENS_SIZE:
             tokens = tokens[:MAX_TOKENS_SIZE]
         input_ids = torch.tensor(tokens).unsqueeze(0)  # Batch size 1
+        input_ids.to(self._device)
         outputs = self._embedding_model(input_ids)
         last_hidden_states = outputs[0]  # The last hidden-state is the first element of the output tuple
         mean_of_words = torch.mean(last_hidden_states, axis=1).squeeze(0).tolist()
