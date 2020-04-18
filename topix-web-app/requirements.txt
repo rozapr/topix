@@ -1,2 +1,8 @@
 gensim
 scikit-learn
+matplotlib
+numpy
+scipy
+plotly
+pandas
+kneed

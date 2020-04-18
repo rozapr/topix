@@ -1,0 +1,1 @@
+ python3.6 topix-web-app/test.py --ip=0.0.0.0 --port=5000 --input=/datadrive/topix/exploration/data/wikiextractor/categories.json
