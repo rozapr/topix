@@ -14,14 +14,14 @@ DISTORTIONS_FILE_PATH = f'{BASE_OUTPUT_FOLDER}/distortions_graph.png'
 CLUSTERS_FILE_PATH = f'{BASE_OUTPUT_FOLDER}/clusters.html'
 
 
-def k_means(vectors: List[np.ndarray], num_clusters: int = None, save_figure: bool = False) -> List[int]:
+def k_means(vectors: List[np.ndarray], num_clusters: int = None, save_figures: bool = False) -> List[int]:
     if not num_clusters:
-        num_clusters = get_clusters_num(vectors)
+        num_clusters = get_clusters_num(vectors, save_graph=save_figures)
     print(f'clustering docs to {num_clusters} clusters.')
     clustering_model = KMeans(n_clusters=num_clusters)
     clustering_model.fit(vectors)
     cluster_assignment = clustering_model.labels_
-    if save_figure:
+    if save_figures:
         save_3d_embedding_figure(vectors, cluster_assignment)
     return cluster_assignment
 
