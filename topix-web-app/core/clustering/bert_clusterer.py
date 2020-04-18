@@ -26,7 +26,7 @@ class BertClusterer(TopicClusterer):
         print(f'{datetime.now()} num of docs: {len_docs}')
         for index, document in enumerate(documents):
             sentences = document.split('\n')
-            sentence_embeddings = [self.get_sentence_embeddings(sentence) for sentence in sentences]
+            sentence_embeddings = [self.get_sentence_embedding(sentence) for sentence in sentences]
             sentence_embeddings = np.array([sentence for sentence in sentence_embeddings if sentence is not None])
             mean_document_embedding = np.mean(sentence_embeddings, axis=0)
             document_embeddings.append(mean_document_embedding)
@@ -36,18 +36,18 @@ class BertClusterer(TopicClusterer):
         print(f'{datetime.now()} finished embedding docs')
         return document_embeddings
 
-    def get_sentence_embeddings(self, sentence: str) -> List[float]:
+    def get_sentence_embedding(self, sentence: str) -> List[float]:
         if sentence.strip() == '' or len(sentence.split()) < MIN_WORDS_IN_SENTENCE:
             return
         sentence = f'[CLS] {sentence} [SEP]'
         tokens = self._tokenizer.encode(sentence)
         if len(tokens) > MAX_TOKENS_SIZE:
-            tokens = tokens[:MAX_TOKENS_SIZE]
-        input_ids = torch.tensor(tokens).unsqueeze(0)  # Batch size 1
+            tokens = tokens[:MAX_TOKENS_SIZE] # if the sentence is too big, we takes only the first MAX_TOKENS_SIZE tokens
+        input_ids = torch.tensor(tokens).unsqueeze(0)  # batch size is 1
         input_ids = input_ids.to(self._device)
         outputs = self._embedding_model(input_ids)
-        last_hidden_states = outputs[0]  # The last hidden-state is the first element of the output tuple
-        mean_of_words = torch.mean(last_hidden_states, axis=1).squeeze(0).tolist()
+        last_hidden_states = outputs[0]  # The last hidden-state, the token embeddings, is the first element of the output tuple
+        mean_of_words = torch.mean(last_hidden_states, axis=1).squeeze(0).tolist() # the sentence embedding is the average of all the bert token embeddings
         return mean_of_words
 
     def cluster(self, documents: List[str]) -> List[List[str]]:
