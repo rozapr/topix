@@ -23,17 +23,17 @@ class BertClusterer(TopicClusterer):
     def get_document_embeddings(self, documents: List[str]) -> List[np.ndarray]:
         document_embeddings = []
         len_docs = len(documents)
-        print(f'{datetime.now()} num of docs: {len_docs}')
+        print(f'{datetime.now()} num of docs: {len_docs}') # TODO - print it to a logger
         for index, document in enumerate(documents):
             sentences = document.split('\n')
             sentence_embeddings = [self.get_sentence_embedding(sentence) for sentence in sentences]
             sentence_embeddings = np.array([sentence for sentence in sentence_embeddings if sentence is not None])
-            mean_document_embedding = np.mean(sentence_embeddings, axis=0)
+            mean_document_embedding = np.mean(sentence_embeddings, axis=0) # the document embedding is the average of all the sentence embeddings
             document_embeddings.append(mean_document_embedding)
-            if index % 100 == 0:
+            if index % 100 == 0: # for logging purposes
                 present = round(100 * index / len_docs)
-                print(f'{datetime.now()} finished {present}%')
-        print(f'{datetime.now()} finished embedding docs')
+                print(f'{datetime.now()} finished {present}%') # TODO - print it to a logger
+        print(f'{datetime.now()} finished embedding docs') # TODO - print it to a logger
         return document_embeddings
 
     def get_sentence_embedding(self, sentence: str) -> List[float]:
