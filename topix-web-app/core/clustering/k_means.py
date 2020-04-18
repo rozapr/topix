@@ -14,18 +14,19 @@ DISTORTIONS_FILE_PATH = f'{BASE_OUTPUT_FOLDER}/distortions_graph.png'
 CLUSTERS_FILE_PATH = f'{BASE_OUTPUT_FOLDER}/clusters.html'
 
 
-def k_means(vectors: List[np.ndarray], num_clusters: int = None) -> List[int]:
+def k_means(vectors: List[np.ndarray], num_clusters: int = None, save_figure: bool = False) -> List[int]:
     if not num_clusters:
         num_clusters = get_clusters_num(vectors)
     print(f'clustering docs to {num_clusters} clusters.')
     clustering_model = KMeans(n_clusters=num_clusters)
     clustering_model.fit(vectors)
     cluster_assignment = clustering_model.labels_
-    save_3d_embedding_figure(vectors, cluster_assignment)
+    if save_figure:
+        save_3d_embedding_figure(vectors, cluster_assignment)
     return cluster_assignment
 
 
-def get_clusters_num(vectors: List[np.ndarray]) -> int:
+def get_clusters_num(vectors: List[np.ndarray], save_graph: bool = False) -> int:
     distortions = []
     cluster_num_series = range(1, 10)
     for clusters_num in cluster_num_series:
@@ -38,7 +39,8 @@ def get_clusters_num(vectors: List[np.ndarray]) -> int:
         distortions.append(km.inertia_)
 
     kn = KneeLocator(cluster_num_series, distortions, curve='convex', direction='decreasing')
-    save_distortions_graph(cluster_num_series, distortions)
+    if save_graph:
+        save_distortions_graph(cluster_num_series, distortions)
     return kn.knee
 
 
