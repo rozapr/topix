@@ -1,11 +1,20 @@
 from flask import Flask, jsonify, request
-from core import BertClusterer
-from core import TopicModeler
+from .core import BertClusterer
+from .core import TopicModeler
+from .core import TFIDFTopicDescriptor
+from nltk.tokenize import word_tokenize
 
 app = Flask(__name__)
 
-# JUST AS MOCK! WILL GIVE ERROR BECAUSE OF NONES!
-topic_modeler = TopicModeler(clusterer=BertClusterer(), descriptor=None)
+
+topic_modeler = TopicModeler(clusterer=BertClusterer(), descriptor=TFIDFTopicDescriptor(
+    tokenize=word_tokenize,
+    min_df=0,
+    max_df_ratio=1 ,
+    topn_words_per_topic=3,
+    phrases_min_count=5,
+    phrases_threshold=10
+))
 
 
 @app.route('/topic_model', methods=['POST'])

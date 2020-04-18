@@ -6,3 +6,4 @@ scipy
 plotly
 pandas
 kneed
+nltk
