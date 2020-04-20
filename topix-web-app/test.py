@@ -1,6 +1,8 @@
 import requests
 import argparse
 import json
+from core.topix_format import convert_to_topix_format
+
 
 
 def read_json_file(path: str):
@@ -42,7 +44,8 @@ def main():
     response = topic_model(json_content=read_json_file(
         args.input), ip=args.ip, port=args.port)
 
-    print(json.dumps(response, indent=4))
+    output = convert_to_topix_format(response)
+    print(json.dumps(output, indent=4, ensure_ascii=False))
 
 
 main()

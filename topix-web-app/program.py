@@ -3,6 +3,7 @@ from core import BertClusterer
 from core import TopicModeler
 from core import TFIDFTopicDescriptor
 from nltk.tokenize import word_tokenize
+from core.topix_format import convert_to_topix_format
 
 app = Flask(__name__)
 
@@ -25,4 +26,4 @@ def topic_model():
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)
