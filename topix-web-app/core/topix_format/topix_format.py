@@ -14,8 +14,8 @@ def convert_to_topix_format(d):
     for c_i, cluster in enumerate(d):        
         cluster_obj = {
             'cluster_id' : f'{CLUSTER_KEY}_{c_i}',
-            'cluster_name' : cluster['description'][0],
-            'top_words' : [],
+            'cluster_name' : ', '.join(cluster['description']),
+            'top_words' : cluster['description'],
             'number_of_documents' : len(cluster['documents'])
         }
         
@@ -39,23 +39,17 @@ def convert_to_topix_format(d):
         
         cluster_obj['list_of_documents_ids'] = list_of_documents_ids
         
-        # sub clusters = top words, docs distributed equally (not real clustering)
+        # sub clusters
         sub_clusters = []
         cluster_size = len(cluster['documents'])
-        sub_cluster_size = math.floor(cluster_size / (len(cluster['description']) - 1))
         
-        for cs_i, word in enumerate(cluster['description'][1:]):
-            size = sub_cluster_size
-            cluster_size -= size
-            if cluster_size < sub_cluster_size:
-                size += cluster_size
-            
+        for sc_i, sub_cluster in enumerate(cluster['subtopics']):
             sub_cluster_obj = {
-                'cluster_id' : f'{SUB_CLUSTER_KEY}_{c_i}_{cs_i}',
-                'cluster_name' : word,
-                'top_words' : [],
-                'number_of_documents' : size,
-                'list_of_documents_ids' : []
+                'cluster_id' : f'{SUB_CLUSTER_KEY}_{c_i}_{sc_i}',
+                'cluster_name' : ', '.join(sub_cluster['description']),
+                'top_words' : sub_cluster['description'],
+                'number_of_documents' : len(sub_cluster['documents']),
+                'list_of_documents_ids' : [doc_to_id[doc] for doc in sub_cluster['documents']]
             }
             sub_clusters.append(sub_cluster_obj)
         
