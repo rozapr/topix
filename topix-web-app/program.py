@@ -21,7 +21,7 @@ topic_modeler = TopicModeler(clusterer=BertClusterer(), descriptor=TFIDFTopicDes
 @app.route('/topic_model', methods=['POST'])
 def topic_model():
     content = request.json
-    topics = topic_modeler.topic_models(content)
+    topics = topic_modeler.topic_models(content, depth=1)
     return jsonify(topics)
 
 
