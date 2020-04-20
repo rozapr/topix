@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
-from .core import BertClusterer
-from .core import TopicModeler
-from .core import TFIDFTopicDescriptor
+from core import BertClusterer
+from core import TopicModeler
+from core import TFIDFTopicDescriptor
 from nltk.tokenize import word_tokenize
 
 app = Flask(__name__)
@@ -11,7 +11,7 @@ topic_modeler = TopicModeler(clusterer=BertClusterer(), descriptor=TFIDFTopicDes
     tokenize=word_tokenize,
     min_df=0,
     max_df_ratio=1 ,
-    topn_words_per_topic=3,
+    topn_words_per_topic=6,
     phrases_min_count=5,
     phrases_threshold=10
 ))
