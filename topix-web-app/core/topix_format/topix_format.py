@@ -1,10 +1,11 @@
+from typing import List, Dict, Any
 import math
 
 DOC_KEY = 'd'
 CLUSTER_KEY = 'c'
 SUB_CLUSTER_KEY = 'sc'
 
-def convert_to_topix_format(d):
+def convert_to_topix_format(d : List[Dict[str, Any]]) -> Dict[str, Any]:
     result = {}
     clusters = []
     documents = []

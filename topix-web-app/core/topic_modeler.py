@@ -12,7 +12,7 @@ class TopicModeler:
         self._clusterer = clusterer
         self._descriptor = descriptor
 
-    def topic_models(self, root_documents: List[str], depth = 0: int, subtopic_ratio = 0.2: float) -> List[Dict[str, Any]]:
+    def topic_models(self, root_documents: List[str], depth : int = 0, subtopic_ratio : float = 0.2) -> List[Dict[str, Any]]:
         clusters = self._clusterer.cluster(documents=root_documents)
         topic_descriptions = self._descriptor.generate_descriptions(clusters)
 
