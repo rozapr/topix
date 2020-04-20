@@ -48,7 +48,7 @@ def convert_to_topix_format(d : List[Dict[str, Any]]) -> Dict[str, Any]:
                 'cluster_id' : f'{SUB_CLUSTER_KEY}_{c_i}_0',
                 'cluster_name' : '',
                 'top_words' : [],
-                'number_of_documents' : len(sub_cluster['documents']),
+                'number_of_documents' : len(list_of_documents_ids),
                 'list_of_documents_ids' : list_of_documents_ids
             }
             sub_clusters.append(sub_cluster_obj)
