@@ -42,17 +42,26 @@ def convert_to_topix_format(d : List[Dict[str, Any]]) -> Dict[str, Any]:
         
         # sub clusters
         sub_clusters = []
-        cluster_size = len(cluster['documents'])
-        
-        for sc_i, sub_cluster in enumerate(cluster['subtopics']):
+        if 'subtopics' not in cluster:
+            # single sub cluster = cluster
             sub_cluster_obj = {
-                'cluster_id' : f'{SUB_CLUSTER_KEY}_{c_i}_{sc_i}',
-                'cluster_name' : ', '.join(sub_cluster['description']),
-                'top_words' : sub_cluster['description'],
+                'cluster_id' : f'{SUB_CLUSTER_KEY}_{c_i}_0',
+                'cluster_name' : '',
+                'top_words' : [],
                 'number_of_documents' : len(sub_cluster['documents']),
-                'list_of_documents_ids' : [doc_to_id[doc] for doc in sub_cluster['documents']]
+                'list_of_documents_ids' : list_of_documents_ids
             }
             sub_clusters.append(sub_cluster_obj)
+        else:
+            for sc_i, sub_cluster in enumerate(cluster['subtopics']):
+                sub_cluster_obj = {
+                    'cluster_id' : f'{SUB_CLUSTER_KEY}_{c_i}_{sc_i}',
+                    'cluster_name' : ', '.join(sub_cluster['description']),
+                    'top_words' : sub_cluster['description'],
+                    'number_of_documents' : len(sub_cluster['documents']),
+                    'list_of_documents_ids' : [doc_to_id[doc] for doc in sub_cluster['documents']]
+                }
+                sub_clusters.append(sub_cluster_obj)
         
         cluster_obj['sub_clusters'] = sub_clusters
         
