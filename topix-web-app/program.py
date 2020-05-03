@@ -9,8 +9,8 @@ app = Flask(__name__)
 
 topic_modeler = TopicModeler(clusterer=BertClusterer(), descriptor=TFIDFTopicDescriptor(
     tokenize=word_tokenize,
-    min_df=0,
-    max_df_ratio=1 ,
+    min_df=3,
+    max_df_ratio=0.5,
     topn_words_per_topic=6,
     phrases_min_count=5,
     phrases_threshold=10
@@ -20,7 +20,7 @@ topic_modeler = TopicModeler(clusterer=BertClusterer(), descriptor=TFIDFTopicDes
 @app.route('/topic_model', methods=['POST'])
 def topic_model():
     content = request.json
-    topics = topic_modeler.topic_models(content)
+    topics = topic_modeler.topic_models(content, depth=1)
     return jsonify(topics)
 
 
